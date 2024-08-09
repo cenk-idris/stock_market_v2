@@ -11,11 +11,12 @@ final logger = Logger();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load env variables
+  await dotenv.load(fileName: '.env');
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  await dotenv.load(fileName: '.env');
 
   runApp(const StonksApp());
 

@@ -1,6 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as fui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stock_market_v2/data/data_providers/firestore_provider.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_state.dart';
 
@@ -18,6 +19,7 @@ class AuthGate extends StatelessWidget {
       create: (context) => AuthBloc(
         authRepository: AuthRepository(
           authProvider: AuthFirebaseProvider(),
+          firestoreProvider: FirestoreProvider(),
         ),
       ),
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -41,7 +43,11 @@ class AuthGate extends StatelessWidget {
               ],
             );
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           }
         },
       ),

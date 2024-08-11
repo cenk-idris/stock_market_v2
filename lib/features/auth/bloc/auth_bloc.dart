@@ -41,14 +41,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       logger.e("This is a FirebaseAuthException", error: 'Test Error');
     } catch (e) {
       logger.e("This is a _onLogoutRequested", error: 'Test Error');
-    } finally {
-      // test the logger, remove finally later on
-      logger.e("This is a _onLogoutRequested", error: 'Test Error');
     }
   }
 
   Future<void> _onNewUserCreated(
-      NewUserCreated event, Emitter<AuthState> emit) async {}
+      NewUserCreated event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      await authRepository.createNewUserRecord(event.user);
+      emit(AuthAuthenticated(event.user));
+    } on FirebaseAuthException catch (e) {
+      logger.e('FirebaseAuthException', stackTrace: StackTrace.current);
+      emit(AuthError('Failed to create user in Firestore: ${e.toString()}'));
+    } catch (e) {
+      logger.e('Err: ${e.toString()}', stackTrace: StackTrace.current);
+      emit(AuthError('Failed to create user in Firestore: ${e.toString()}'));
+    }
+  }
 
   @override
   Future<void> close() async {

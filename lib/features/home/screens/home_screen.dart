@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_bloc.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
 
+import '../widgets/stocks_tab.dart';
+import '../widgets/wallet_tab.dart';
+
 class HomeScreen extends StatelessWidget {
   final User user;
 
@@ -31,13 +34,27 @@ class HomeScreen extends StatelessWidget {
             )
           ],
         ),
-        body: SafeArea(
+        body: const SafeArea(
           child: TabBarView(
             children: [
               StocksTab(),
               WalletTab(),
             ],
           ),
+        ),
+        bottomNavigationBar: const TabBar(
+          //padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
+          tabs: [
+            Tab(icon: Icon(Icons.area_chart), text: 'Stocks'),
+            Tab(icon: Icon(Icons.account_balance_wallet), text: 'Wallet'),
+          ],
+          indicator: BoxDecoration(),
+          // labelColor: Colors.black,
+          // unselectedLabelColor: Colors.grey.shade400,
+          //indicatorSize: TabBarIndicatorSize.label,
+          //indicatorWeight: 7.0,
+          // indicatorPadding: EdgeInsets.all(10.0),
+          // indicatorColor: Colors.black,
         ),
       ),
     );

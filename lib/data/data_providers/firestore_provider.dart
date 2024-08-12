@@ -13,7 +13,7 @@ class FirestoreProvider {
     try {
       await _firestore.collection('users').doc(user.uid).set({
         'balance': 1000000,
-        'stocks': ['sdfsdf', 123, {}, []],
+        'stocks': [],
       });
     } on FirebaseException catch (e) {
       logger.e('Firebase Exception: $e', stackTrace: StackTrace.current);

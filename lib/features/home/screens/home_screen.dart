@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stock_market_v2/data/repositories/stock_repository.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_bloc.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
 
+import '../../market/bloc/market_bloc.dart';
 import '../widgets/market_tab.dart';
 import '../widgets/wallet_tab.dart';
 
@@ -15,7 +17,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => MarketBloc())],
+      providers: [
+        BlocProvider(
+            create: (context) => MarketBloc(stockRepository: StockRepository()))
+      ],
       child: DefaultTabController(
         length: 2,
         child: Scaffold(

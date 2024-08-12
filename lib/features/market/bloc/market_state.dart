@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../models/stock_model.dart';
+
 sealed class MarketState extends Equatable {
   @override
   List<Object?> get props => [];

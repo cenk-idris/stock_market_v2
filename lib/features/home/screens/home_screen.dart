@@ -7,7 +7,7 @@ import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
 import 'package:stock_market_v2/features/market/bloc/market_event.dart';
 
 import '../../market/bloc/market_bloc.dart';
-import '../widgets/market_tab.dart';
+import '../../market/presentation/market_tab.dart';
 import '../widgets/wallet_tab.dart';
 
 class HomeScreen extends StatelessWidget {

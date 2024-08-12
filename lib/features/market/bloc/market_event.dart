@@ -7,4 +7,4 @@ sealed class MarketEvent extends Equatable {
 
 class MarketLoadRequested extends MarketEvent {}
 
-class MarketSubscribeToTickers extends MarketEvent {}
+class MarketSubscribeToTickersRequested extends MarketEvent {}

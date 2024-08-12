@@ -24,3 +24,9 @@ class MarketLoaded extends MarketState {
 
   MarketLoaded(this.market);
 }
+
+class MarketError extends MarketState {
+  final String message;
+
+  MarketError(this.message);
+}

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_market_v2/data/repositories/stock_repository.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_bloc.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
+import 'package:stock_market_v2/features/market/bloc/market_event.dart';
 
 import '../../market/bloc/market_bloc.dart';
 import '../widgets/market_tab.dart';
@@ -19,7 +20,8 @@ class HomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) => MarketBloc(stockRepository: StockRepository()))
+            create: (context) => MarketBloc(stockRepository: StockRepository())
+              ..add(MarketLoadRequested()))
       ],
       child: DefaultTabController(
         length: 2,

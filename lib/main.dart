@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stock_market_v2/data/data_providers/finnhub_api_provider.dart';
+import 'package:stock_market_v2/data/repositories/stock_repository.dart';
 import 'firebase_options.dart';
 import 'package:logger/logger.dart';
 
@@ -18,7 +21,20 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const StonksApp());
+  final finnhubApiProvider = FinnhubApiProvider(
+    apiUrl: dotenv.env['FINNHUB_API_URL'] ?? '',
+    apiKey: dotenv.env['FINNHUB_API_KEY'] ?? '',
+  );
+
+  final stockRepository =
+      StockRepository(finnhubApiProvider: finnhubApiProvider);
+
+  runApp(
+    RepositoryProvider(
+      create: (BuildContext context) {},
+      child: const StonksApp(),
+    ),
+  );
 
   // logger.t("This is a trace log");
   // logger.d("This is a debug log");

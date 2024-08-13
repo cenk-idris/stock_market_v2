@@ -16,18 +16,13 @@ class Stock extends Equatable {
   });
 
   // Factory constructor to create a Stock from JSON (e.g., from API response)
-  factory Stock.fromJson(Map<String, dynamic> json, {String symbol = ''}) {
+  factory Stock.fromStockData(Map<String, dynamic> stockData) {
     return Stock(
-      fullName: json['fullName'] ?? '',
-      symbol: symbol.isNotEmpty ? symbol : json['symbol'],
-      assetName:
-          json['assetName'] ?? symbol.replaceAll('.', '-').replaceAll(':', '-'),
-      price: json['price'] is int
-          ? (json['price'] as int).toDouble()
-          : json['price'],
-      previousClose: json['previousClose'] is int
-          ? (json['previousClose'] as int).toDouble()
-          : json['previousClose'],
+      fullName: stockData['fullName'],
+      symbol: stockData['symbol'],
+      assetName: stockData['assetName'],
+      price: stockData['price'],
+      previousClose: stockData['previousClose'],
     );
   }
 

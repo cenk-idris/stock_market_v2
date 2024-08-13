@@ -7,4 +7,11 @@ sealed class MarketEvent extends Equatable {
 
 class MarketLoadRequested extends MarketEvent {}
 
-class MarketSubscribeToTickersRequested extends MarketEvent {}
+class MarketSubscribeToTickersRequested extends MarketEvent {
+  final List<String> symbols;
+
+  MarketSubscribeToTickersRequested(this.symbols);
+
+  @override
+  List<Object?> get props => [symbols];
+}

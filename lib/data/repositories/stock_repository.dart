@@ -3,11 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../data_providers/finnhub_api_provider.dart';
 
 class StockRepository {
-  final FinnhubApiProvider finnhubApiProvider = FinnhubApiProvider(
-      apiUrl: dotenv.env['FINNHUB_API_URL'] ?? '',
-      apiKey: dotenv.env['FINNHUB_API_KEY'] ?? '');
+  final FinnhubApiProvider finnhubApiProvider;
 
-  StockRepository();
+  StockRepository({required this.finnhubApiProvider});
 
   Future<Map<String, dynamic>> getStockData(String symbol) async {
     try {
@@ -15,10 +13,11 @@ class StockRepository {
       final companyProfileData =
           await finnhubApiProvider.fetchCompanyProfile(symbol);
 
-      // Combine the data into one map
+      // Combine and preprocess to pass clean data to stock constructor
       final combinedData = {
         'fullName': companyProfileData['name'],
         'symbol': symbol,
+        'assetName': symbol.replaceAll('.', '-').replaceAll(':', '-'),
         'price': (stockQuoteData['c'] is int)
             ? (stockQuoteData['c'] as int).toDouble()
             : stockQuoteData['c'],
@@ -31,5 +30,9 @@ class StockRepository {
     } catch (e) {
       throw Exception('getStockDetails Err: ${e.toString()}');
     }
+  }
+
+  Future<void> subscribeToSymbols(List<String> symbols) async {
+    await finnhubApiProvider.subscribeToSymbols(symbols);
   }
 }

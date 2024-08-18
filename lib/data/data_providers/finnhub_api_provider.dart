@@ -36,7 +36,7 @@ class FinnhubApiProvider {
   }
 
   Future<void> _connectAndAttachControllerToWebSocket() async {
-    if (_webSocketChannel != null) {
+    if (_webSocketChannel == null) {
       // Initialize the controller,
       _webSocketTickersStreamController =
           StreamController<Map<String, dynamic>>.broadcast();
@@ -72,6 +72,10 @@ class FinnhubApiProvider {
 
   // Subscribe to stocks
   void _subscribeToSymbols(List<String> stockSymbols) async {
+    if (_webSocketChannel == null) {
+      print('WebSocketChannel is not initialized.');
+      return;
+    }
     // loop and subscribe to each symbol
     for (final symbol in stockSymbols) {
       final message = json.encode({'type': 'subscribe', 'symbol': symbol});

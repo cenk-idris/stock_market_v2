@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:stock_market_v2/constants.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '../../main.dart';
 
 class FinnhubApiProvider {
   final String apiUrl;
@@ -11,7 +14,70 @@ class FinnhubApiProvider {
   WebSocketChannel? _webSocketChannel;
   StreamController<Map<String, dynamic>>? _webSocketTickersStreamController;
 
-  FinnhubApiProvider({required this.apiUrl, required this.apiKey});
+  // Private named constructor to encapsulate
+  FinnhubApiProvider._internal({
+    required this.apiUrl,
+    required this.apiKey,
+  });
+
+  static Future<FinnhubApiProvider> create({
+    required String apiUrl,
+    required String apiKey,
+  }) async {
+    final provider =
+        FinnhubApiProvider._internal(apiUrl: apiUrl, apiKey: apiKey);
+    await provider._initializeAndSubscribe();
+    return provider;
+  }
+
+  Future<void> _initializeAndSubscribe() async {
+    await _connectAndAttachControllerToWebSocket();
+    _subscribeToSymbols(stockSymbols);
+  }
+
+  Future<void> _connectAndAttachControllerToWebSocket() async {
+    if (_webSocketChannel != null) {
+      // Initialize the controller,
+      _webSocketTickersStreamController =
+          StreamController<Map<String, dynamic>>.broadcast();
+
+      // Try to establish connection with FinnHub WebSocket
+      _webSocketChannel =
+          WebSocketChannel.connect(Uri.parse('wss://ws.$apiUrl?token=$apiKey'));
+
+      // Test the connection if sink is ready
+      try {
+        await _webSocketChannel?.ready;
+        print('WebSocket is live, Sink can accept subscriptions now');
+      } on SocketException catch (e) {
+        print('SocketException: ${e.toString()}');
+        throw Exception(e);
+      } on WebSocketChannelException catch (e) {
+        print('WSChannelException: ${e.toString()}');
+        throw Exception(e);
+      }
+
+      // Listen to the WebSocket stream for incoming messages
+      _webSocketChannel!.stream.listen((message) {
+        final data = jsonDecode(message);
+        _webSocketTickersStreamController?.add(data);
+      }, onError: (error) {
+        _webSocketTickersStreamController?.addError(error);
+      }, onDone: () {
+        print('WebSocket connection closed.');
+        _webSocketTickersStreamController?.close();
+      });
+    }
+  }
+
+  // Subscribe to stocks
+  void _subscribeToSymbols(List<String> stockSymbols) async {
+    // loop and subscribe to each symbol
+    for (final symbol in stockSymbols) {
+      final message = json.encode({'type': 'subscribe', 'symbol': symbol});
+      _webSocketChannel!.sink.add(message);
+    }
+  }
 
   Future<Map<String, dynamic>> fetchStockQuote(String symbol) async {
     final Uri uri = Uri(
@@ -63,22 +129,13 @@ class FinnhubApiProvider {
     }
   }
 
-  // Connecting and Subscribe to FinnHub's WebSocket API
-  Future<void> subscribeToSymbols(List<String> symbols) async {
-    // Try to establish connection with WebSocket
-    _webSocketChannel =
-        WebSocketChannel.connect(Uri.parse('wss://ws.$apiUrl?token=$apiKey'));
+  Stream<Map<String, dynamic>> getTickersControllerStream() {
+    return _webSocketTickersStreamController?.stream ?? const Stream.empty();
+  }
 
-    // Test the connection if sink is ready
-    try {
-      await _webSocketChannel?.ready;
-      print('WebSocket is live, Sink can accept subscriptions now');
-    } on SocketException catch (e) {
-      print('SocketException: ${e.toString()}');
-      throw Exception(e);
-    } on WebSocketChannelException catch (e) {
-      print('WSChannelException: ${e.toString()}');
-      throw Exception(e);
-    }
+  void disposeWebSocket() {
+    logger.i('Disposing Web Socket');
+    _webSocketChannel?.sink.close();
+    _webSocketTickersStreamController?.close();
   }
 }

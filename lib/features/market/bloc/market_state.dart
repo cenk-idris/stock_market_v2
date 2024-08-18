@@ -23,6 +23,9 @@ class MarketLoaded extends MarketState {
   final List<Stock> market;
 
   MarketLoaded(this.market);
+
+  @override
+  List<Object?> get props => [market];
 }
 
 class MarketError extends MarketState {

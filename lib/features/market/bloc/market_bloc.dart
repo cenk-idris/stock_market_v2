@@ -12,11 +12,12 @@ import 'market_state.dart';
 
 class MarketBloc extends Bloc<MarketEvent, MarketState> {
   final StockRepository stockRepository;
-  StreamSubscription<Map<String, dynamic>>? _webSocketTickersSubscription;
+  StreamSubscription<Map<String, dynamic>>? _tickersSubscription;
 
   MarketBloc({required this.stockRepository}) : super(MarketInitial()) {
     on<MarketLoadRequested>(_onMarketLoadRequested);
     on<MarketSubscribeToTickersRequested>(_onMarketSubscribeToTickersRequested);
+    on<MarketDataReceived>(_onMarketDataReceived);
   }
 
   Future<void> _onMarketLoadRequested(
@@ -54,12 +55,57 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
       Emitter<MarketState> emit) async {
     if (state is MarketLoaded) {
       try {
-        final marketLoadedState = state as MarketLoaded;
-        final List<Stock> currentStocks = marketLoadedState.market;
-        await stockRepository.subscribeToSymbols(event.symbols);
+        _tickersSubscription =
+            stockRepository.getTickersStream().listen((data) {
+          if (data['type'] == 'trade') {
+            add(MarketDataReceived(data));
+          } else if (data['type'] == 'error') {
+            print('Socket returned error message: ${data['msg']}');
+          }
+        });
       } catch (e) {
         print(e);
       }
     }
+  }
+
+  Future<void> _onMarketDataReceived(
+      MarketDataReceived event, Emitter<MarketState> emit) async {
+    final currentState = state;
+    if (currentState is MarketLoaded) {
+      final List<Stock> currentStocks = List.from(currentState.market);
+
+      //Data might hold multiple trade updates
+      //for same symbol so lets filter it down
+      Map<String, dynamic> latestTrades = {};
+      for (final trade in event.data['data']) {
+        // same key ? override : new entry
+        latestTrades[trade['s']] = trade;
+      }
+      print(latestTrades.toString());
+      //Now we can update the prices
+      for (final trade in latestTrades.values) {
+        final String targetSymbol = trade['s'];
+
+        print(trade['p']);
+        final double updatedPrice =
+            (trade['p'] is int) ? (trade['p'] as int).toDouble() : trade['p'];
+        final int targetIndex =
+            currentStocks.indexWhere((stock) => stock.symbol == targetSymbol);
+        if (targetIndex != -1) {
+          final Stock updatedStock =
+              currentStocks[targetIndex].copyWith(price: updatedPrice);
+          currentStocks[targetIndex] = updatedStock;
+          //print(currentStocks.toString());
+          emit(MarketLoaded(currentStocks));
+        }
+      }
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _tickersSubscription?.cancel();
+    return super.close();
   }
 }

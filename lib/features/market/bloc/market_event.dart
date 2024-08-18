@@ -15,3 +15,12 @@ class MarketSubscribeToTickersRequested extends MarketEvent {
   @override
   List<Object?> get props => [symbols];
 }
+
+class MarketDataReceived extends MarketEvent {
+  final Map<String, dynamic> data;
+
+  MarketDataReceived(this.data);
+
+  @override
+  List<Object?> get props => [data];
+}

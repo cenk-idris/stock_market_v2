@@ -21,19 +21,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final finnhubApiProvider = FinnhubApiProvider(
-    apiUrl: dotenv.env['FINNHUB_API_URL'] ?? '',
-    apiKey: dotenv.env['FINNHUB_API_KEY'] ?? '',
-  );
-
-  final stockRepository =
-      StockRepository(finnhubApiProvider: finnhubApiProvider);
-
   runApp(
-    RepositoryProvider(
-      create: (BuildContext context) {},
-      child: const StonksApp(),
-    ),
+    const StonksApp(),
   );
 
   // logger.t("This is a trace log");

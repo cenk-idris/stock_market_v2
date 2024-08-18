@@ -13,7 +13,7 @@ class StockRepository {
       final companyProfileData =
           await finnhubApiProvider.fetchCompanyProfile(symbol);
 
-      // Combine and preprocess to pass clean data to stock constructor
+      // Combine and preprocess before sending to stock constructor
       final combinedData = {
         'fullName': companyProfileData['name'],
         'symbol': symbol,
@@ -34,5 +34,9 @@ class StockRepository {
 
   Future<void> subscribeToSymbols(List<String> symbols) async {
     await finnhubApiProvider.subscribeToSymbols(symbols);
+  }
+
+  Stream<Map<String, dynamic>> getTickersStream() {
+    return finnhubApiProvider.getTickersControllerStream();
   }
 }

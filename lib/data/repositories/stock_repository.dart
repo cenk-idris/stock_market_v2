@@ -32,10 +32,6 @@ class StockRepository {
     }
   }
 
-  Future<void> subscribeToSymbols(List<String> symbols) async {
-    await finnhubApiProvider.subscribeToSymbols(symbols);
-  }
-
   Stream<Map<String, dynamic>> getTickersStream() {
     return finnhubApiProvider.getTickersControllerStream();
   }

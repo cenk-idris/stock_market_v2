@@ -105,7 +105,10 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
 
   @override
   Future<void> close() {
+    print('disposing ticker subscription on market bloc');
     _tickersSubscription?.cancel();
+    // what would be better approach? This doesn't feel right
+    stockRepository.closeControllerAndWebSocketConnection();
     return super.close();
   }
 }

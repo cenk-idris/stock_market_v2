@@ -64,7 +64,7 @@ class FinnhubApiProvider {
       }, onError: (error) {
         _webSocketTickersStreamController?.addError(error);
       }, onDone: () {
-        print('WebSocket connection closed.');
+        print('WebSocket connection closed. (onDone received)');
         _webSocketTickersStreamController?.close();
       });
     }
@@ -137,7 +137,7 @@ class FinnhubApiProvider {
     return _webSocketTickersStreamController?.stream ?? const Stream.empty();
   }
 
-  void disposeWebSocket() {
+  void closeControllerAndWebSocketConnection() {
     logger.i('Disposing Web Socket');
     _webSocketChannel?.sink.close();
     _webSocketTickersStreamController?.close();

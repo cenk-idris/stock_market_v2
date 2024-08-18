@@ -35,4 +35,8 @@ class StockRepository {
   Stream<Map<String, dynamic>> getTickersStream() {
     return finnhubApiProvider.getTickersControllerStream();
   }
+
+  void closeControllerAndWebSocketConnection() {
+    finnhubApiProvider.closeControllerAndWebSocketConnection();
+  }
 }

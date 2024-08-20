@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../blocs/wallet_bloc/wallet_bloc.dart';
+import '../models/owned_stock_model.dart';
 
 class WalletTab extends StatelessWidget {
   const WalletTab({super.key});
@@ -45,6 +46,64 @@ class WalletTab extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'My Stonks 🤑',
+                      style: TextStyle(fontSize: 32),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Asset worth',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text('shares')
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: walletState.stocks.length,
+                  itemBuilder: (context, index) {
+                    final OwnedStock stock = walletState.stocks[index];
+                    return ListTile(
+                      onTap: () {},
+                      leading: Container(
+                        width: 40,
+                        child: Image.asset(
+                          'assets/stock_icons/${stock.assetName}.png',
+                          width: 50,
+                          height: 40,
+                        ),
+                      ),
+                      title: Text(stock.symbol),
+                      subtitle: Text(stock.fullName),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            currencyFormatter.format(
+                                stock.shares * (stock.currentPrice ?? 1)),
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                          Text(stock.shares.toString())
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

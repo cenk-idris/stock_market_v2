@@ -30,7 +30,6 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
       final int stockAmount = stockSymbols.length;
       for (final symbol in stockSymbols) {
         final stockData = await stockRepository.getStockData(symbol);
-        print(stockData.toString());
         final stock = Stock.fromStockData(stockData);
         stocksList.add(stock);
         successfulSymbols.add(symbol);
@@ -82,12 +81,9 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
         // same key ? override : new entry
         latestTrades[trade['s']] = trade;
       }
-      print(latestTrades.toString());
       //Now we can update the prices
       for (final trade in latestTrades.values) {
         final String targetSymbol = trade['s'];
-
-        print(trade['p']);
         final double updatedPrice =
             (trade['p'] is int) ? (trade['p'] as int).toDouble() : trade['p'];
         final int targetIndex =

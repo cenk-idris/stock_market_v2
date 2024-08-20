@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market_v2/data/data_providers/finnhub_api_provider.dart';
+import 'package:stock_market_v2/data/data_providers/firestore_provider.dart';
 import 'package:stock_market_v2/data/repositories/stock_repository.dart';
+import 'package:stock_market_v2/data/repositories/user_repository.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_bloc.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_event.dart';
 import 'package:stock_market_v2/features/market/bloc/market_event.dart';
@@ -11,7 +13,7 @@ import 'package:stock_market_v2/features/wallet/blocs/wallet_bloc/wallet_bloc.da
 
 import '../../market/bloc/market_bloc.dart';
 import '../../market/presentation/market_tab.dart';
-import '../widgets/wallet_tab.dart';
+import '../../wallet/presentation/wallet_tab.dart';
 
 class HomeScreen extends StatelessWidget {
   final User user;
@@ -44,9 +46,17 @@ class HomeScreen extends StatelessWidget {
               RepositoryProvider<FinnhubApiProvider>.value(
                 value: finnhubApiProvider,
               ),
+              RepositoryProvider<FirestoreProvider>(
+                create: (context) => FirestoreProvider(),
+              ),
               RepositoryProvider<StockRepository>(
                 create: (context) => StockRepository(
                   finnhubApiProvider: context.read<FinnhubApiProvider>(),
+                ),
+              ),
+              RepositoryProvider(
+                create: (context) => UserRepository(
+                  firestoreProvider: context.read<FirestoreProvider>(),
                 ),
               )
             ],
@@ -57,7 +67,12 @@ class HomeScreen extends StatelessWidget {
                     stockRepository: context.read<StockRepository>(),
                   )..add(MarketLoadRequested()),
                 ),
-                BlocProvider(create: (context) => WalletBloc())
+                BlocProvider(
+                  create: (context) => WalletBloc(
+                    stockRepository: context.read<StockRepository>(),
+                    userRepository: context.read<UserRepository>(),
+                  )..add(WalletLoadRequested()),
+                )
               ],
               child: DefaultTabController(
                 length: 2,

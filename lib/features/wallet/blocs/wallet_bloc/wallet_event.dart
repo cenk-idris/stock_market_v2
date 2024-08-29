@@ -17,10 +17,10 @@ class WalletDataUpdated extends WalletEvent {
 }
 
 class WalletTickersUpdated extends WalletEvent {
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> latestTrades;
 
-  WalletTickersUpdated(this.data);
+  WalletTickersUpdated(this.latestTrades);
 
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [latestTrades];
 }

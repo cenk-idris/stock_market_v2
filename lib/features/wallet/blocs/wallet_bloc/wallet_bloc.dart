@@ -71,10 +71,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (currentState is WalletLoaded) {
       final List<OwnedStock> updatedStocks = List.from(currentState.stocks);
 
-      final Map<String, dynamic> lastTrades = event.data;
+      final Map<String, dynamic> lastTrades = event.latestTrades;
 
       for (final MapEntry trade in lastTrades.entries) {
-        final tradeSymbol = trade.key;
+        final String tradeSymbol = trade.key;
         final double updatedPrice = trade.value;
 
         final int targetIndex =

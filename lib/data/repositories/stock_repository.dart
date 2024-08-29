@@ -36,6 +36,7 @@ class StockRepository {
         });
       },
       onCancel: () {
+        print('no more active listeners, closing connection and controller');
         finnhubApiProvider.closeControllerAndWebSocketConnection();
         _broadcastController.close();
       },

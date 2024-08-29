@@ -42,6 +42,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           stockRepository.getFilteredTickersStream().listen((tickersData) {
         print(tickersData);
         add(WalletTickersUpdated(tickersData));
+      }, onError: (error) {
+        // Handle errors from the stream
+        print('Error from tickers stream: $error');
+        emit(WalletError('Failed to update stock prices.'));
       });
     } catch (e) {
       emit(WalletError('Failed to load wallet data'));
@@ -88,5 +92,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
       emit(WalletLoaded(balance: currentState.balance, stocks: updatedStocks));
     }
+  }
+
+  @override
+  Future<void> close() {
+    print('canceling ticker subscription on wallet bloc');
+    _tickersSubscription?.cancel();
+    print('canceling userPortfolio subscription on wallet bloc');
+    _userPortfolioSubscription?.cancel();
+    return super.close();
   }
 }

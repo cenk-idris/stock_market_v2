@@ -57,6 +57,8 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
         _tickersSubscription =
             stockRepository.getFilteredTickersStream().listen((latestTrades) {
           add(MarketTickersReceived(latestTrades));
+        }, onError: (error) {
+          //handle err
         });
       } catch (e) {
         print(e);

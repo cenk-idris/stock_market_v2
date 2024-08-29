@@ -42,7 +42,7 @@ class MarketTab extends StatelessWidget {
               itemBuilder: (context, index) {
                 final stock = marketState.market[index];
                 final double percentChange =
-                    (stock.price - stock.previousClose) /
+                    (stock.currentPrice - stock.previousClose) /
                         stock.previousClose *
                         100;
                 return ListTile(
@@ -62,7 +62,7 @@ class MarketTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        currencyFormatter.format(stock.price),
+                        currencyFormatter.format(stock.currentPrice),
                         style: TextStyle(
                             fontSize: 15.0,
                             color: percentChange >= 0.0

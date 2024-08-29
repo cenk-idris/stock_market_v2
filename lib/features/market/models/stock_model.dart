@@ -4,14 +4,14 @@ class Stock extends Equatable {
   final String fullName;
   final String symbol;
   final String assetName;
-  final double price;
+  final double currentPrice;
   final double previousClose;
 
   const Stock({
     required this.fullName,
     required this.symbol,
     required this.assetName,
-    required this.price,
+    required this.currentPrice,
     required this.previousClose,
   });
 
@@ -21,7 +21,7 @@ class Stock extends Equatable {
       fullName: stockData['fullName'],
       symbol: stockData['symbol'],
       assetName: stockData['assetName'],
-      price: stockData['price'],
+      currentPrice: stockData['price'],
       previousClose: stockData['previousClose'],
     );
   }
@@ -31,19 +31,19 @@ class Stock extends Equatable {
     String? fullName,
     String? symbol,
     String? assetName,
-    double? price,
+    double? currentPrice,
     double? previousClose,
   }) {
     return Stock(
       fullName: fullName ?? this.fullName,
       symbol: symbol ?? this.symbol,
       assetName: assetName ?? this.assetName,
-      price: price ?? this.price,
+      currentPrice: currentPrice ?? this.currentPrice,
       previousClose: previousClose ?? this.previousClose,
     );
   }
 
   @override
   List<Object?> get props =>
-      [symbol, price, fullName, assetName, previousClose];
+      [symbol, currentPrice, fullName, assetName, previousClose];
 }

@@ -17,7 +17,7 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
   MarketBloc({required this.stockRepository}) : super(MarketInitial()) {
     on<MarketLoadRequested>(_onMarketLoadRequested);
     on<MarketSubscribeToTickersRequested>(_onMarketSubscribeToTickersRequested);
-    on<MarketDataReceived>(_onMarketDataReceived);
+    on<MarketTickersReceived>(_onMarketTickersReceived);
   }
 
   Future<void> _onMarketLoadRequested(
@@ -55,12 +55,8 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
     if (state is MarketLoaded) {
       try {
         _tickersSubscription =
-            stockRepository.getFilteredTickersStream().listen((data) {
-          if (data['type'] == 'trade') {
-            add(MarketDataReceived(data));
-          } else if (data['type'] == 'error') {
-            print('Socket returned error message: ${data['msg']}');
-          }
+            stockRepository.getFilteredTickersStream().listen((latestTrades) {
+          add(MarketTickersReceived(latestTrades));
         });
       } catch (e) {
         print(e);
@@ -68,29 +64,24 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
     }
   }
 
-  Future<void> _onMarketDataReceived(
-      MarketDataReceived event, Emitter<MarketState> emit) async {
+  Future<void> _onMarketTickersReceived(
+      MarketTickersReceived event, Emitter<MarketState> emit) async {
     final currentState = state;
     if (currentState is MarketLoaded) {
       final List<Stock> currentStocks = List.from(currentState.market);
 
-      //Data might hold multiple trade updates
-      //for same symbol so lets filter it down
-      Map<String, dynamic> latestTrades = {};
-      for (final trade in event.data['data']) {
-        // same key ? override : new entry
-        latestTrades[trade['s']] = trade;
-      }
-      //Now we can update the prices
-      for (final trade in latestTrades.values) {
-        final String targetSymbol = trade['s'];
-        final double updatedPrice =
-            (trade['p'] is int) ? (trade['p'] as int).toDouble() : trade['p'];
+      final Map<String, dynamic> lastTrades = event.latestTrades;
+
+      for (final MapEntry trade in lastTrades.entries) {
+        final String targetSymbol = trade.key;
+        final double updatedPrice = trade.value;
+
         final int targetIndex =
             currentStocks.indexWhere((stock) => stock.symbol == targetSymbol);
+
         if (targetIndex != -1) {
           final Stock updatedStock =
-              currentStocks[targetIndex].copyWith(price: updatedPrice);
+              currentStocks[targetIndex].copyWith(currentPrice: updatedPrice);
           currentStocks[targetIndex] = updatedStock;
           //print(currentStocks.toString());
           emit(MarketLoaded(currentStocks));

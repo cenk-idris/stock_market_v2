@@ -28,6 +28,8 @@ class StockRepository {
                   : trade['p'];
             }
             _broadcastController.add(Map<String, dynamic>.from(_latestTrades));
+          } else if (data['type'] == 'error') {
+            print('Socket returned error message: ${data['msg']}');
           }
         }, onError: (error) {
           _broadcastController.addError(error);

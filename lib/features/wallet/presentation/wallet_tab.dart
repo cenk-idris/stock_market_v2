@@ -96,7 +96,7 @@ class WalletTab extends StatelessWidget {
                           Text(
                             currencyFormatter.format(
                                 stock.shares * (stock.currentPrice ?? 1)),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                           Text(stock.shares.toString())

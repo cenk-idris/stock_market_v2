@@ -39,7 +39,7 @@ class FinnhubApiProvider {
     if (_webSocketChannel == null) {
       // Initialize the controller,
       _webSocketTickersStreamController =
-          StreamController<Map<String, dynamic>>.broadcast();
+          StreamController<Map<String, dynamic>>();
 
       // Try to establish connection with FinnHub WebSocket
       _webSocketChannel =
@@ -138,7 +138,7 @@ class FinnhubApiProvider {
   }
 
   void closeControllerAndWebSocketConnection() {
-    logger.i('Disposing Web Socket');
+    print('Disposing Web Socket');
     _webSocketChannel?.sink.close();
     _webSocketTickersStreamController?.close();
   }

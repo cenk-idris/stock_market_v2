@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../data_providers/finnhub_api_provider.dart';
@@ -5,7 +7,38 @@ import '../data_providers/finnhub_api_provider.dart';
 class StockRepository {
   final FinnhubApiProvider finnhubApiProvider;
 
-  StockRepository({required this.finnhubApiProvider});
+  // shared tickers state across consumers
+  final Map<String, dynamic> _latestTrades = {};
+  late StreamController<Map<String, dynamic>> _broadcastController;
+
+  StockRepository({required this.finnhubApiProvider}) {
+    _initializeBroadcastController();
+  }
+
+  void _initializeBroadcastController() {
+    _broadcastController = StreamController<Map<String, dynamic>>.broadcast(
+      onListen: () {
+        finnhubApiProvider.getTickersControllerStream().listen((data) {
+          if (data['type'] == 'trade') {
+            // aggregate the trade data
+            for (final trade in data['data']) {
+              final tradeSymbol = trade['s'];
+              _latestTrades[tradeSymbol] = (trade['p'] is int)
+                  ? (trade['p'] as int).toDouble()
+                  : trade['p'];
+            }
+            _broadcastController.add(Map<String, dynamic>.from(_latestTrades));
+          }
+        }, onError: (error) {
+          _broadcastController.addError(error);
+        });
+      },
+      onCancel: () {
+        finnhubApiProvider.closeControllerAndWebSocketConnection();
+        _broadcastController.close();
+      },
+    );
+  }
 
   Future<Map<String, dynamic>> getStockData(String symbol) async {
     try {
@@ -32,11 +65,7 @@ class StockRepository {
     }
   }
 
-  Stream<Map<String, dynamic>> getTickersStream() {
-    return finnhubApiProvider.getTickersControllerStream();
-  }
-
-  void closeControllerAndWebSocketConnection() {
-    finnhubApiProvider.closeControllerAndWebSocketConnection();
+  Stream<Map<String, dynamic>> getFilteredTickersStream() {
+    return _broadcastController.stream;
   }
 }

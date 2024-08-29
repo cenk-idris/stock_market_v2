@@ -39,8 +39,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       // Subscribe to Tickers (WebSocket) updates
       _tickersSubscription =
-          stockRepository.getTickersStream().listen((tickersData) {
-        //print(tickersData);
+          stockRepository.getFilteredTickersStream().listen((tickersData) {
+        print(tickersData);
+        add(WalletTickersUpdated(tickersData));
       });
     } catch (e) {
       emit(WalletError('Failed to load wallet data'));
@@ -63,9 +64,26 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(WalletLoaded(balance: updatedBalance, stocks: ownedStocks));
   }
-  //
-  // Future<void> _onWalletTickersUpdated(
-  //     WalletTickersUpdated event, Emitter<WalletState> emit) {
-  //   return null;
-  // }
+
+  Future<void> _onWalletTickersUpdated(
+      WalletTickersUpdated event, Emitter<WalletState> emit) {
+    final currentState = state;
+    if (currentState is WalletLoaded) {
+      final List<OwnedStock> updatedStocks = List.from(currentState.stocks);
+
+      final Map<String, dynamic> lastTrades = event.data;
+
+      for (final MapEntry trade in lastTrades.entries) {
+        final tradeSymbol = trade.key;
+        final double updatedPrice = trade.value;
+
+        final int targetIndex =
+            updatedStocks.indexWhere((stock) => stock.symbol == tradeSymbol);
+
+        if (targetIndex != -1) {
+          // update the stock
+        }
+      }
+    }
+  }
 }

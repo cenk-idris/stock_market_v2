@@ -45,7 +45,7 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
       }
     } catch (e) {
       logger.e(e.toString(), stackTrace: StackTrace.current);
-      emit(MarketError('Failed to fetch market date'));
+      emit(MarketError('Failed to fetch market data'));
     }
   }
 
@@ -55,7 +55,7 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
     if (state is MarketLoaded) {
       try {
         _tickersSubscription =
-            stockRepository.getTickersStream().listen((data) {
+            stockRepository.getFilteredTickersStream().listen((data) {
           if (data['type'] == 'trade') {
             add(MarketDataReceived(data));
           } else if (data['type'] == 'error') {
@@ -103,8 +103,8 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
   Future<void> close() {
     print('disposing ticker subscription on market bloc');
     _tickersSubscription?.cancel();
-    // what would be better approach? This doesn't feel right
-    stockRepository.closeControllerAndWebSocketConnection();
+    // // what would be better approach? This doesn't feel right
+    // stockRepository.closeControllerAndWebSocketConnection();
     return super.close();
   }
 }

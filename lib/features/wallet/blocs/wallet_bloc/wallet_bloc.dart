@@ -22,7 +22,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       : super(WalletInitial()) {
     on<WalletLoadRequested>(_onWalletLoadRequested);
     on<WalletDataUpdated>(_onWalletDataUpdated);
-    //on<WalletTickersUpdated>(_onWalletTickersUpdated);
+    on<WalletTickersUpdated>(_onWalletTickersUpdated);
   }
 
   Future<void> _onWalletLoadRequested(
@@ -65,7 +65,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(WalletLoaded(balance: updatedBalance, stocks: ownedStocks));
   }
 
-  Future<void> _onWalletTickersUpdated(
+  void _onWalletTickersUpdated(
       WalletTickersUpdated event, Emitter<WalletState> emit) {
     final currentState = state;
     if (currentState is WalletLoaded) {
@@ -82,8 +82,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
         if (targetIndex != -1) {
           // update the stock
+          updatedStocks[targetIndex] =
+              updatedStocks[targetIndex].copyWith(currentPrice: updatedPrice);
         }
       }
+      emit(WalletLoaded(balance: currentState.balance, stocks: updatedStocks));
     }
   }
 }

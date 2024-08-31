@@ -8,6 +8,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../main.dart';
 
+// Learning by one stupidity at a time
+// It's not really a singleton if you can still
+// create multiple instance
 class FinnhubApiProvider {
   final String apiUrl;
   final String apiKey;

@@ -15,6 +15,7 @@ class FinnhubApiProvider {
   StreamController<Map<String, dynamic>>? _webSocketTickersStreamController;
 
   // Private named constructor to encapsulate
+  // Okey let's be honest, factory cannot be async and this was the way
   FinnhubApiProvider._internal({
     required this.apiUrl,
     required this.apiKey,

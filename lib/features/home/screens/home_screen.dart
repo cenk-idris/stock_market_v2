@@ -68,6 +68,7 @@ class HomeScreen extends StatelessWidget {
                   )..add(MarketLoadRequested()),
                 ),
                 BlocProvider(
+                  lazy: false,
                   create: (context) => WalletBloc(
                     stockRepository: context.read<StockRepository>(),
                     userRepository: context.read<UserRepository>(),

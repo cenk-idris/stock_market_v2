@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:stock_market_v2/data/repositories/stock_repository.dart';
 import 'package:stock_market_v2/features/market/bloc/market_bloc.dart';
 import 'package:stock_market_v2/features/stock_detail/presentation/stock_detail_screen.dart';
 
@@ -8,6 +9,7 @@ import '../bloc/market_state.dart';
 
 class MarketTab extends StatelessWidget {
   const MarketTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,8 +53,14 @@ class MarketTab extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context2) =>
-                            StockDetailScreen(stockSymbol: stock.symbol),
+                        builder: (context2) => MultiRepositoryProvider(
+                          providers: [
+                            RepositoryProvider.value(
+                              value: context.read<StockRepository>(),
+                            ),
+                          ],
+                          child: StockDetailScreen(stockSymbol: stock.symbol),
+                        ),
                       ),
                     );
                   },

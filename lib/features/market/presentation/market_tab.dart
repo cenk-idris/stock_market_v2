@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:stock_market_v2/features/market/bloc/market_bloc.dart';
+import 'package:stock_market_v2/features/stock_detail/presentation/stock_detail_screen.dart';
 
 import '../bloc/market_state.dart';
 
@@ -46,7 +47,15 @@ class MarketTab extends StatelessWidget {
                         stock.previousClose *
                         100;
                 return ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context2) =>
+                            StockDetailScreen(stockSymbol: stock.symbol),
+                      ),
+                    );
+                  },
                   leading: Container(
                     width: 40,
                     child: Image.asset(

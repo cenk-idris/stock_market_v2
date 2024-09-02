@@ -33,13 +33,15 @@ class StockDetailScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
+          //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             BlocProvider(
               create: (context) => HistoricalCubit(
                 stockSymbol: stockSymbol,
                 stockRepository: context.read<StockRepository>(),
-              ),
-              child: StockHistoryWidget(stockSymbol: stockSymbol),
+              )..loadHistoricalData(
+                  stockSymbol, '1', 'day', '2023-07-20', '2024-07-20'),
+              child: StockHistoryChart(stockSymbol: stockSymbol),
             ),
           ],
         ),

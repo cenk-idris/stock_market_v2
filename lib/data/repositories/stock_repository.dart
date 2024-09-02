@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stock_market_v2/data/data_providers/polygon_api_provider.dart';
 
+import '../../features/stock_detail/models/historical_data_model.dart';
 import '../data_providers/finnhub_api_provider.dart';
 
 class StockRepository {
   final FinnhubApiProvider finnhubApiProvider;
+  final PolygonApiProvider polygonApiProvider;
 
   // shared tickers state across consumers
   final Map<String, dynamic> _latestTrades = {};
   late StreamController<Map<String, dynamic>> _broadcastController;
 
-  StockRepository({required this.finnhubApiProvider}) {
+  StockRepository(
+      {required this.finnhubApiProvider, required this.polygonApiProvider}) {
     _initializeBroadcastController();
   }
 
@@ -70,5 +74,15 @@ class StockRepository {
 
   Stream<Map<String, dynamic>> getFilteredTickersStream() {
     return _broadcastController.stream;
+  }
+
+  Future<List<HistoricalData>> getHistoricalData(String symbol,
+      String multiplier, String timespan, String from, String to) async {
+    final data = await polygonApiProvider.fetchRawHistoricalData(
+        symbol, multiplier, timespan, from, to);
+    //print(data);
+    return (data['results'] as List)
+        .map((point) => HistoricalData.fromJson(point))
+        .toList();
   }
 }

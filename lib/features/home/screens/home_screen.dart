@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stock_market_v2/data/data_providers/finnhub_api_provider.dart';
 import 'package:stock_market_v2/data/data_providers/firestore_provider.dart';
+import 'package:stock_market_v2/data/data_providers/polygon_api_provider.dart';
 import 'package:stock_market_v2/data/repositories/stock_repository.dart';
 import 'package:stock_market_v2/data/repositories/user_repository.dart';
 import 'package:stock_market_v2/features/auth/bloc/auth_bloc.dart';
@@ -46,12 +47,18 @@ class HomeScreen extends StatelessWidget {
               RepositoryProvider<FinnhubApiProvider>.value(
                 value: finnhubApiProvider,
               ),
+              RepositoryProvider<PolygonApiProvider>(
+                create: (context) => PolygonApiProvider(
+                    apiUrl: dotenv.env['POLYGON_API_URL'] ?? '',
+                    apiKey: dotenv.env['POLYGON_API_KEY'] ?? ''),
+              ),
               RepositoryProvider<FirestoreProvider>(
                 create: (context) => FirestoreProvider(),
               ),
               RepositoryProvider<StockRepository>(
                 create: (context) => StockRepository(
                   finnhubApiProvider: context.read<FinnhubApiProvider>(),
+                  polygonApiProvider: context.read<PolygonApiProvider>(),
                 ),
               ),
               RepositoryProvider(

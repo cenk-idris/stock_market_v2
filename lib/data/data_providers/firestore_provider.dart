@@ -39,6 +39,64 @@ class FirestoreProvider {
     return ((value * mod).round().toDouble() / mod);
   }
 
+  Future<void> sellStock(String symbol, double quantity, double currentPrice,
+      String assetName, String fullName) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final worthOfSale = quantity * currentPrice;
+      final userDocRef = _firestore.collection('users').doc(user.uid);
+
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(userDocRef);
+
+        if (!snapshot.exists) {
+          throw Exception("User document does not exist");
+        }
+
+        final data = snapshot.data();
+        if (data == null || data.isEmpty) {
+          throw Exception("User document exists but contains no data");
+        }
+
+        final currentBalance = (data['balance'] is int)
+            ? (data['balance'] as int).toDouble()
+            : data['balance'];
+        final stocks = List<Map<String, dynamic>>.from(data['stocks']);
+
+        final stockIndex =
+            stocks.indexWhere((asset) => asset['symbol'] == symbol);
+        if (stockIndex == -1) {
+          throw Exception('Asset not found');
+        }
+
+        final asset = stocks[stockIndex];
+        final remainingShares = roundTheDecimal(asset['shares'] - quantity, 2);
+
+        if (remainingShares < 0) {
+          throw Exception('Tried to sell more shares than you own');
+        } else {
+          if (remainingShares == 0) {
+            stocks.removeAt(stockIndex);
+          } else {
+            stocks[stockIndex] = {
+              'symbol': symbol,
+              'shares': remainingShares,
+              'asset_name': assetName,
+              'full_name': fullName
+            };
+          }
+          final updatedBalance =
+              roundTheDecimal(currentBalance + worthOfSale, 2);
+
+          transaction.update(userDocRef, {
+            'balance': updatedBalance,
+            'stocks': stocks,
+          });
+        }
+      });
+    }
+  }
+
   Future<void> buyStock(String symbol, double quantity, double currentPrice,
       String assetName, String fullName) async {
     final user = _auth.currentUser;

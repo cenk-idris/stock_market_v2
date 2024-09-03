@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../data/repositories/stock_repository.dart';
+import '../../../data/repositories/user_repository.dart';
+import '../../stock_detail/presentation/stock_detail_screen.dart';
 import '../blocs/wallet_bloc/wallet_bloc.dart';
 import '../models/owned_stock_model.dart';
 
@@ -78,7 +81,25 @@ class WalletTab extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final OwnedStock stock = walletState.stocks[index];
                     return ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context2) => MultiRepositoryProvider(
+                              providers: [
+                                RepositoryProvider.value(
+                                  value: context.read<StockRepository>(),
+                                ),
+                                RepositoryProvider.value(
+                                  value: context.read<UserRepository>(),
+                                )
+                              ],
+                              child:
+                                  StockDetailScreen(stockSymbol: stock.symbol),
+                            ),
+                          ),
+                        );
+                      },
                       leading: Container(
                         width: 40,
                         child: Image.asset(

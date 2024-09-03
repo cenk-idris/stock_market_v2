@@ -94,11 +94,11 @@ class StockTransactionWidget extends StatelessWidget {
                           final quantity =
                               double.tryParse(_quantityController.text) ?? 0.0;
                           // Trigger the sell stock action
-                          // Assuming there's a method in WalletBloc to handle selling stock
 
-                          // context.read<WalletBloc>().add(
-                          //     SellStock(stock.symbol, quantity, stock.currentPrice));
-                          // quantityController.clear();
+                          context
+                              .read<TransactionCubit>()
+                              .sellStock(stockSymbol, quantity);
+                          _quantityController.clear();
                         },
                         child: const Text('Sell Stonks'),
                       ),

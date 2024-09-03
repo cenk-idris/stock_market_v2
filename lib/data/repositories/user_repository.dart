@@ -24,8 +24,9 @@ class UserRepository {
         symbol, quantity, currentPrice, assetName, fullName);
   }
 
-  // Future<void> sellStock(
-  //     String symbol, double quantity, double currentPrice) async {
-  //   await firestoreProvider.sellStock(symbol, quantity, currentPrice);
-  // }
+  Future<void> sellStock(String symbol, double quantity, double currentPrice,
+      String assetName, String fullName) async {
+    await firestoreProvider.sellStock(
+        symbol, quantity, currentPrice, assetName, fullName);
+  }
 }

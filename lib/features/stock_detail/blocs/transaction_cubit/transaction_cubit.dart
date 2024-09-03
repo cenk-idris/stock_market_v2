@@ -49,6 +49,32 @@ class TransactionCubit extends Cubit<TransactionState> {
     );
   }
 
+  Future<void> sellStock(String symbol, double quantity) async {
+    if (quantity == 0) {
+      emit(TransactionError('Quantity must be at leat 0.01'));
+      emit(TransactionInitial());
+    } else if (currentPrice != null) {
+      print('selling $symbol');
+      emit(TransactionLoading());
+      try {
+        final stockData = await stockRepository.getStockData(symbol);
+        final String fullName = stockData['fullName'];
+        final String assetName = stockData['assetName'];
+        await userRepository.sellStock(
+            symbol, quantity, currentPrice!, assetName, fullName);
+        emit(TransactionSuccess(
+            'Successfully sold $quantity shares of $stockSymbol'));
+        emit(TransactionInitial());
+      } catch (e) {
+        emit(TransactionError('Failed to sell stock: ${e.toString()}'));
+        emit(TransactionInitial());
+      }
+    } else {
+      emit(TransactionError('Market is likely to be closed, check NYSE hours'));
+      emit(TransactionInitial());
+    }
+  }
+
   Future<void> buyStock(String symbol, double quantity) async {
     if (quantity == 0) {
       emit(TransactionError('Quantity must be at leat 0.01'));

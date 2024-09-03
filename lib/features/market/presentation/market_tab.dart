@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:stock_market_v2/data/repositories/stock_repository.dart';
+import 'package:stock_market_v2/data/repositories/user_repository.dart';
 import 'package:stock_market_v2/features/market/bloc/market_bloc.dart';
 import 'package:stock_market_v2/features/stock_detail/presentation/stock_detail_screen.dart';
 
@@ -58,6 +59,9 @@ class MarketTab extends StatelessWidget {
                             RepositoryProvider.value(
                               value: context.read<StockRepository>(),
                             ),
+                            RepositoryProvider.value(
+                              value: context.read<UserRepository>(),
+                            )
                           ],
                           child: StockDetailScreen(stockSymbol: stock.symbol),
                         ),

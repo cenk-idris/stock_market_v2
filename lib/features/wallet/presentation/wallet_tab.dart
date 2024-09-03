@@ -94,8 +94,8 @@ class WalletTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            currencyFormatter.format(
-                                stock.shares * (stock.currentPrice ?? 1)),
+                            currencyFormatter
+                                .format(stock.shares * (stock.currentPrice!)),
                             style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.bold),
                           ),

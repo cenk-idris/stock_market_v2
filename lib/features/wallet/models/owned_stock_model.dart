@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../data/repositories/stock_repository.dart';
+
 class OwnedStock extends Equatable {
   final String fullName;
   final String symbol;
@@ -15,8 +17,12 @@ class OwnedStock extends Equatable {
     required this.shares,
   });
 
-  factory OwnedStock.fromFirestoreOwnedStockData(
-      Map<String, dynamic> ownedStockData) {
+  static Future<OwnedStock> fromFirestoreOwnedStockData(
+      Map<String, dynamic> ownedStockData,
+      StockRepository stockRepository) async {
+    final String symbol = ownedStockData['symbol'];
+    final stockData = await stockRepository.getStockData(symbol);
+    final double? currentStockPrice = stockData['price'];
     return OwnedStock(
       fullName: ownedStockData['full_name'],
       symbol: ownedStockData['symbol'],
@@ -24,6 +30,7 @@ class OwnedStock extends Equatable {
       shares: (ownedStockData['shares'] is int)
           ? (ownedStockData['shares'] as int).toDouble()
           : ownedStockData['shares'],
+      currentPrice: currentStockPrice,
     );
   }
 

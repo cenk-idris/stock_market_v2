@@ -17,4 +17,15 @@ class UserRepository {
       }
     });
   }
+
+  Future<void> buyStock(String symbol, double quantity, double currentPrice,
+      String assetName, String fullName) async {
+    await firestoreProvider.buyStock(
+        symbol, quantity, currentPrice, assetName, fullName);
+  }
+
+  // Future<void> sellStock(
+  //     String symbol, double quantity, double currentPrice) async {
+  //   await firestoreProvider.sellStock(symbol, quantity, currentPrice);
+  // }
 }

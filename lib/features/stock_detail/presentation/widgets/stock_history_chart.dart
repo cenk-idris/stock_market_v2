@@ -25,15 +25,21 @@ class StockHistoryChart extends StatelessWidget {
       if (state is HistoricalInitial) {
         return Text('State is HistoricalInitial');
       } else if (state is HistoricalLoading) {
-        return Center(
-          child: Column(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(
-                height: 10.0,
-              ),
-              Text('Graph is loading..'),
-            ],
+        return AspectRatio(
+          aspectRatio: 1.7,
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20.0,
+                ),
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Text('Graph is loading..'),
+              ],
+            ),
           ),
         );
       } else if (state is HistoricalLoaded) {
@@ -161,6 +167,25 @@ class StockHistoryChart extends StatelessWidget {
               ),
             ),
           ],
+        );
+      } else if (state is HistoricalError) {
+        return AspectRatio(
+          aspectRatio: 1.7,
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20.0,
+                ),
+                Icon(
+                  Icons.warning,
+                  size: 100,
+                  color: Colors.red,
+                ),
+                Text(state.message),
+              ],
+            ),
+          ),
         );
       } else {
         return Container();

@@ -40,7 +40,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // Subscribe to Tickers (WebSocket) updates
       _tickersSubscription =
           stockRepository.getFilteredTickersStream().listen((tickersData) {
-        print(tickersData);
+        //print(tickersData);
         add(WalletTickersUpdated(tickersData));
       }, onError: (error) {
         // Handle errors from the stream
@@ -61,9 +61,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     if (event.data['stocks'] != null) {
       final List<dynamic> stocksDynamic = event.data['stocks'];
-      ownedStocks = stocksDynamic.map((stockData) {
-        return OwnedStock.fromFirestoreOwnedStockData(stockData);
-      }).toList();
+      ownedStocks = await Future.wait(
+        stocksDynamic.map((stockData) {
+          return OwnedStock.fromFirestoreOwnedStockData(
+              stockData, stockRepository);
+        }).toList(),
+      );
     }
 
     emit(WalletLoaded(balance: updatedBalance, stocks: ownedStocks));

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stock_market_v2/data/data_providers/firestore_provider.dart';
 import 'package:stock_market_v2/data/data_providers/polygon_api_provider.dart';
 
 import '../../features/stock_detail/models/historical_data_model.dart';

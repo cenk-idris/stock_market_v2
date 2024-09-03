@@ -1,7 +1,7 @@
 const List<String> stockSymbols = [
   'BINANCE:SOLUSDT', // Solana to USDT trading pair on Binance
   'BINANCE:BTCUSDT', // Bitcoin to USDT trading pair on Binance
-  'BINANCE:XTZUSDT', // Tezos to USDT trading pair on Binance
+  'BINANCE:ETHUSDT', // Ethereum to USDT trading pair on Binance
   'AAPL', // Apple Inc. DONE
   'MSFT', // Microsoft Corporation
   'NVDA', // NVIDIA Corporation
